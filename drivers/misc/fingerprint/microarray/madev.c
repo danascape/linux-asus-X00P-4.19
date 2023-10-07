@@ -29,8 +29,8 @@ static DECLARE_WAIT_QUEUE_HEAD(screenwaitq);
 static DECLARE_WAIT_QUEUE_HEAD(gWaitq);
 static DECLARE_WAIT_QUEUE_HEAD(U1_Waitq);
 static DECLARE_WAIT_QUEUE_HEAD(U2_Waitq);
-struct wakeup_source gProcessWakeLock;
-struct wakeup_source gIntWakeLock;
+struct wakeup_source *gProcessWakeLock;
+struct wakeup_source *gIntWakeLock;
 struct work_struct gWork;
 struct workqueue_struct *gWorkq;
 //
@@ -57,7 +57,7 @@ extern wind_device_info_t wind_device_info;
 
 
 static void mas_work(struct work_struct *pws) {
-	__pm_wakeup_event(&gIntWakeLock, 1*HZ);
+	__pm_wakeup_event(gIntWakeLock, 1*HZ);
     smas->f_irq = 1;
     wake_up(&gWaitq);
 #ifdef COMPATIBLE_VERSION3
@@ -178,7 +178,7 @@ static long mas_ioctl(struct file *filp, unsigned int cmd, unsigned long arg) {
 
     switch(cmd){
         case TIMEOUT_WAKELOCK:                                                       //延时锁    timeout lock
-            __pm_wakeup_event(&gProcessWakeLock, 5*HZ);
+            __pm_wakeup_event(gProcessWakeLock, 5*HZ);
             break;
         case SLEEP:                                                       //remove the process out of the runqueue
             smas->f_irq = 0;
@@ -634,8 +634,9 @@ static int init_vars(void)
         if(smas!=NULL) kfree(smas);
         return -ENOMEM;
     }
-    wakeup_source_init(&gProcessWakeLock, "microarray_process_wakelock");
-    wakeup_source_init(&gIntWakeLock, "microarray_int_wakelock");
+
+    gProcessWakeLock = wakeup_source_register(NULL, "microarray_process_wakelock");
+    gIntWakeLock = wakeup_source_register(NULL, "microarray_int_wakelock");
     INIT_WORK(&gWork, mas_work);
     gWorkq = create_singlethread_workqueue("mas_workqueue");
     if (!gWorkq) {
@@ -647,8 +648,8 @@ static int init_vars(void)
 static int deinit_vars(void)
 {
     destroy_workqueue(gWorkq);
-    wakeup_source_trash(&gProcessWakeLock);
-    wakeup_source_trash(&gIntWakeLock);
+    wakeup_source_unregister(gProcessWakeLock);
+    wakeup_source_unregister(gIntWakeLock);
     kfree(smas);
     kfree(sdev);
     return 0;
