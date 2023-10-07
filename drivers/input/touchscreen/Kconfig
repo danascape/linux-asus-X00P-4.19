@@ -1358,4 +1358,6 @@ source "drivers/input/touchscreen/nt36xxx/Kconfig"
 
 source "drivers/input/touchscreen/HX852xES/Kconfig"
 
+source "drivers/input/touchscreen/ft5346i/Kconfig"
+
 endif
