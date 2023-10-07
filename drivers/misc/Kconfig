@@ -649,6 +649,7 @@ source "drivers/misc/fpr_FingerprintCard/Kconfig"
 source "drivers/misc/qrc/Kconfig"
 source "drivers/misc/dtv/fc8350/Kconfig"
 source "drivers/misc/fingerprint/leadcore/Kconfig"
+source "drivers/misc/fingerprint/microarray/Kconfig"
 endmenu
 
 config OKL4_USER_VIPC
