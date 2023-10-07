@@ -30,6 +30,7 @@
 extern "C" {
 #endif
 
+#include <linux/mod_devicetable.h>
 #include <linux/list.h>
 #include <linux/dma-mapping.h>
 #include <linux/platform_device.h>
