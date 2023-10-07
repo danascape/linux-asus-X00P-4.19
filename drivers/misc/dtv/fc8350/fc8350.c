@@ -240,7 +240,7 @@ int isdbt_hw_setting(HANDLE hDevice)
 
 	dtv_irq= irq_of_parse_and_map(dtv_irq_node, 0);
 	printk("[wind_dtv]:dtv_irq = %d\n", dtv_irq);
-	if(  request_irq(dtv_irq, isdbt_threaded_irq, IRQF_DISABLED | IRQF_TRIGGER_FALLING, FC8350_NAME, hInit)  ) 
+	if(  request_irq(dtv_irq, isdbt_threaded_irq, IRQF_TRIGGER_FALLING, FC8350_NAME, hInit)  ) 
 	{
 		printk("[wind_dtv]IRQ LINE NOT AVAILABLE!!\n");
 		return -EINVAL;
