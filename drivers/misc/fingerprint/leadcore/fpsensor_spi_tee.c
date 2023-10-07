@@ -251,7 +251,7 @@ static irqreturn_t fpsensor_irq(int irq, void *handle)
     /* Make sure 'wakeup_enabled' is updated before using it
     ** since this is interrupt context (other thread...) */
     smp_rmb();
-    __pm_wakeup_event(&fpsensor_dev->ttw_wl, msecs_to_jiffies(1000));
+    __pm_wakeup_event(fpsensor_dev->ttw_wl, msecs_to_jiffies(1000));
     setRcvIRQ(1);
     wake_up_interruptible(&fpsensor_dev->wq_irq_return);
     fpsensor_dev->sig_count++;
@@ -718,7 +718,7 @@ printk("12345fpsensor_probe\n");
         goto release_drv_data;
     }
     init_waitqueue_head(&fpsensor_dev->wq_irq_return);
-    wakeup_source_init(&g_fpsensor->ttw_wl, "fpsensor_ttw_wl");
+    g_fpsensor->ttw_wl = wakeup_source_register(NULL, "fpsensor_ttw_wl");
     fpsensor_dev->probe_finish = 1;
     fpsensor_dev->is_sleep_mode = 0;
     fpsensor_dev->device_available = 1;
@@ -754,7 +754,7 @@ static int fpsensor_remove(struct platform_device *pdev)
 #endif
     fpsensor_gpio_free(fpsensor_dev);
     fpsensor_dev_cleanup(fpsensor_dev);
-    wakeup_source_destroy(&fpsensor_dev->ttw_wl);
+    wakeup_source_unregister(fpsensor_dev->ttw_wl);
     kfree(fpsensor_dev);
     g_fpsensor = NULL;
 

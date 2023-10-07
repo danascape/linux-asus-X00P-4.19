@@ -111,7 +111,7 @@ typedef struct {
     int irq_gpio;
     int reset_gpio;
     int power_gpio;
-    struct wakeup_source ttw_wl;
+    struct wakeup_source *ttw_wl;
     //wait queue
     wait_queue_head_t wq_irq_return;
     int cancel;
